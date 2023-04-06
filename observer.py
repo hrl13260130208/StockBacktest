@@ -20,10 +20,10 @@ class Observer():
         prices =self.generator.trade_price(date)
         if prices!=None:
             for strategy in self.strategys:
-                strategy.open(date,prices[0][1])
+                strategy.do_open(date,prices[0][1])
                 for p in prices:
-                    strategy.deal(date, p[0], p[1])
-                strategy.close(date,prices[-1][1])
+                    strategy.do_deal(date, p[0], p[1])
+                strategy.do_close(date,prices[-1][1])
 
 
     def finish(self):

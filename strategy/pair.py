@@ -1,5 +1,6 @@
 import json
 from strategy.base import Base
+from common.config import Config
 from common.option import Option, Record, PairRecord
 
 
@@ -8,7 +9,7 @@ from common.option import Option, Record, PairRecord
 # ==============================
 class PairStrategy(Base):
 
-    def __init__(self, manager, logs):
+    def __init__(self, manager, logs,config:Config):
         super(PairStrategy, self).__init__(manager)
 
         self.logs = logs
@@ -22,6 +23,7 @@ class PairStrategy(Base):
         # 存储待交易
         self.buy_options = []
         self.sell_options = []
+        self.config = config
 
     def clear_options(self):
         self.buy_options = []
@@ -61,85 +63,24 @@ class PairStrategy(Base):
         self.logs.add_sell(self.sell_prices)
 
     def finish(self):
-
         self.set_buys()
         self.set_sells()
-    # def print_logs(self, print_detail=False):
-    #     """
-    #         打印交易详情
-    #     :param print_detail:
-    #     :return:
-    #     """
-    #
-    #     print(f"成对匹配交易:")
-    #     pair_sum = 0
-    #     for p in self.pairs:
-    #         p: PairRecord
-    #         if print_detail:
-    #             print(p)
-    #         pair_sum += p.profit()
-    #     print(f"总计，匹配数量：{len(self.pairs)}，收益：{pair_sum}")
-    #
-    #     print(f"未匹配买入交易：")
-    #     buy_keys = self.buy_prices.keys()
-    #     buy_sum = 0
-    #     for key in buy_keys:
-    #         b: Record = self.buy_prices[key]
-    #         buy_sum += b.real_amount
-    #         if print_detail:
-    #             print(b)
-    #     print(f"总计，交易数量：{len(buy_keys)} 总价：{buy_sum}")
-    #
-    #     print(f"未匹配卖出交易:")
-    #     sell_keys = self.sell_prices.keys()
-    #     sell_sum = 0
-    #     for key in sell_keys:
-    #         s: Record = self.sell_prices[key]
-    #         sell_sum += s.real_amount
-    #         if print_detail:
-    #             print(s)
-    #     print(f"总计，交易数量：{len(sell_keys)} 总价：{sell_sum}")
-    #
-    #     print(f"总交易数：{len(self.pairs) * 2 + len(buy_keys) + len(sell_keys)}")
-    #
-    # def generate_json(self):
-    #     """
-    #         生成json文件，用于网页展示交易
-    #     :return:
-    #     """
-    #     markpoint = {}
-    #
-    #     for p in self.pairs:
-    #         p: PairRecord
-    #         buy: Record = p.buy
-    #         sell: Record = p.sell
-    #         if buy.date in markpoint.keys():
-    #             markpoint[buy.date].append([buy.date, buy.time, float(buy.price), buy.num, 1])
-    #         else:
-    #             markpoint[buy.date] = [[buy.date, buy.time, float(buy.price), buy.num, 1], ]
-    #
-    #         if sell.date in markpoint.keys():
-    #             markpoint[sell.date].append([sell.date, sell.time, float(sell.price), sell.num, 3])
-    #         else:
-    #             markpoint[sell.date] = [[sell.date, sell.time, float(sell.price), sell.num, 3], ]
-    #
-    #     buy_keys = self.buy_prices.keys()
-    #
-    #     for key in buy_keys:
-    #         buy: Record = self.buy_prices[key]
-    #
-    #         if buy.date in markpoint.keys():
-    #             markpoint[buy.date].append([buy.date, buy.time, float(buy.price), buy.num, 0])
-    #         else:
-    #             markpoint[buy.date] = [[buy.date, buy.time, float(buy.price), buy.num, 0], ]
-    #
-    #     sell_keys = self.sell_prices.keys()
-    #     for key in sell_keys:
-    #         sell: Record = self.sell_prices[key]
-    #         if sell.date in markpoint.keys():
-    #             markpoint[sell.date].append([sell.date, sell.time, float(sell.price), sell.num, 2])
-    #         else:
-    #             markpoint[sell.date] = [[sell.date, sell.time, float(sell.price), sell.num, 2], ]
-    #
-    #     with open("data/logs/markpoint.json", "w", encoding="utf-8") as f:
-    #         json.dump(markpoint, f)
+
+    def open(self, date, open):
+        pass
+
+    def deal(self, date, time, p):
+        pass
+
+    def close(self, date, close):
+        pass
+    def do_open(self, date, open):
+        self.open(date,open)
+
+    def do_deal(self, date, time, p):
+        self.deal(date,time,p)
+
+    def do_close(self, date, close):
+        self.close(date,close)
+        if self.config.hold:
+            self.manager.add_hold_logs()

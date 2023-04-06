@@ -6,20 +6,24 @@ import copy
 import json
 from decimal import Decimal
 from utils import calculator
+from common.config import Config
 from common.option import Option, Record, PairRecord
 
 
 class StrategyManager():
 
-    def __init__(self, logs):
+    def __init__(self, num,config:Config,name):
         #   现金
-        self.cash = Decimal(10 ** 5)
+        self.cash = Decimal(num*10 ** 5)
         #   持仓
         self.hold_num = 0
         #   费用
         self.cost = Decimal(0)
 
-        self.logs = logs
+        self.hold_logs=[]
+        self.config = config
+        self.name=name
+        # self.logs = logs
 
     def buy(self, date, time, price, num):
         worth = calculator.count_worth(price, num)
@@ -44,6 +48,10 @@ class StrategyManager():
             return True
         else:
             return False
+
+    def add_hold_logs(self):
+        self.hold_logs.append(self.statistics_hold())
+
 
     def print_count(self):
         print(f"现金：{self.statistics_cash()},持仓：{self.statistics_hold()} 手,"
@@ -88,18 +96,19 @@ class StrategyManager():
 
 class StockManager():
 
-    def __init__(self, logs):
+    def __init__(self, logs,config:Config):
         self.managers = {}
         self.cash = Decimal("0")
         self.cash_map = {}
         self.logs = logs
+        self.config =config
 
     def register_manager(self, name, manager: StrategyManager):
         self.managers[name] = manager
         self.cash_map[name] = manager.cash
         self.cash += manager.cash
 
-    def print_logs(self, print_detail=False):
+    def print_logs(self, days,print_detail=False):
         print("策略执行情况分析：")
         print(f"注册策略及初始资金：{self.cash_map}")
         print("\n\n")
@@ -123,7 +132,25 @@ class StockManager():
               f"策略执行后资产估值： { total_worth}\n"
               f"策略执行后股票持仓：{total_hold} 手\n"
               f"策略手续费总计：{total_cost}")
+
+        print("\n\n")
         print("交易日志：")
+        if self.config.hold:
+            print("每日持仓：")
+            num=len(days)
+            for i in self.managers.values():
+                i: StrategyManager
+                if len(i.hold_logs)!=num:
+                    raise ValueError(f"{i.name}策略每日持仓数据数量有误！")
+            for index in range(num):
+                total_hold_num=0
+                for i in self.managers.values():
+                    i: StrategyManager
+                    total_hold_num+=i.hold_logs[index]
+                print(f"日期：{days[index]} 持仓：{total_hold_num} 手")
+            print("\n\n")
+
+        print("已成交交易详细：")
         self.logs.print_logs(print_detail=print_detail)
         self.logs.generate_json()
 

@@ -13,8 +13,8 @@ from utils.generator import IDGenerator
 # ====================================
 class OpenStrategy(PairStrategy):
 
-    def __init__(self, manager,logs):
-        super().__init__(manager,logs)
+    def __init__(self, manager,logs,config):
+        super().__init__(manager,logs,config)
         self.id = IDGenerator()
 
         self.current_buy = []

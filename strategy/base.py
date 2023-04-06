@@ -18,7 +18,14 @@ class Base():
 
     def close(self, date, close):
         pass
+    def do_open(self, date, open):
+        pass
 
+    def do_deal(self, date, time, p):
+        pass
+
+    def do_close(self, date, close):
+        pass
     def finish(self):
         pass
 
