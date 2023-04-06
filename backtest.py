@@ -41,7 +41,7 @@ class BackTest():
             self.obs.run(d)
 
         self.obs.finish()
-        self.manager.print_logs(days, print_detail=False)
+        self.manager.print_logs( print_detail=False)
 
 
 if __name__ == '__main__':

@@ -83,4 +83,4 @@ class PairStrategy(Base):
     def do_close(self, date, close):
         self.close(date,close)
         if self.config.hold:
-            self.manager.add_hold_logs()
+            self.manager.add_hold_logs(date)

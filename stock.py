@@ -49,8 +49,8 @@ class StrategyManager():
         else:
             return False
 
-    def add_hold_logs(self):
-        self.hold_logs.append(self.statistics_hold())
+    def add_hold_logs(self,date):
+        self.hold_logs.append((date,self.statistics_hold()))
 
 
     def print_count(self):
@@ -108,7 +108,7 @@ class StockManager():
         self.cash_map[name] = manager.cash
         self.cash += manager.cash
 
-    def print_logs(self, days,print_detail=False):
+    def print_logs(self, print_detail=False):
         print("策略执行情况分析：")
         print(f"注册策略及初始资金：{self.cash_map}")
         print("\n\n")
@@ -137,17 +137,19 @@ class StockManager():
         print("交易日志：")
         if self.config.hold:
             print("每日持仓：")
-            num=len(days)
+            num=len(self.managers.values()[0].hold_logs)
             for i in self.managers.values():
                 i: StrategyManager
                 if len(i.hold_logs)!=num:
                     raise ValueError(f"{i.name}策略每日持仓数据数量有误！")
             for index in range(num):
                 total_hold_num=0
+                date=""
                 for i in self.managers.values():
                     i: StrategyManager
-                    total_hold_num+=i.hold_logs[index]
-                print(f"日期：{days[index]} 持仓：{total_hold_num} 手")
+                    date=i.hold_logs[index][0]
+                    total_hold_num+=i.hold_logs[index][1]
+                print(f"日期：{date} 持仓：{total_hold_num} 手")
             print("\n\n")
 
         print("已成交交易详细：")
