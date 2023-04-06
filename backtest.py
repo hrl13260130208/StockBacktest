@@ -1,6 +1,6 @@
 
 from  observer import Observer
-from stock import Manager,Logs
+from stock import StrategyManager,StockManager,Logs
 from strategy.roll_strategy import RollStrategy
 from strategy.open_strategy import OpenStrategy
 from strategy.grid_strategy import GridStrategy
@@ -14,11 +14,17 @@ class BackTest():
 
     def __init__(self):
         self.logs=Logs()
-        self.manager = Manager(self.logs)
+        self.manager = StockManager(self.logs)
         # strategy=RollStrategy(self.manager)
         # strategy=RegionStrategy(self.manager)
-        open=OpenStrategy(self.manager,logs=self.logs)
-        grid=GridStrategy(self.manager,logs=self.logs)
+
+        open_manager=StrategyManager(self.logs)
+        self.manager.register_manager("open",open_manager)
+        open=OpenStrategy(open_manager,logs=self.logs)
+
+        grid_manager = StrategyManager(self.logs)
+        self.manager.register_manager("grid", grid_manager)
+        grid=GridStrategy(grid_manager,logs=self.logs)
         # self.strategy=MultipleStrategy(self.manager)
 
         self.obs=Observer()

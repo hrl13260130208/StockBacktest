@@ -45,15 +45,48 @@ class StrategyManager():
         else:
             return False
 
-    # def print_logs(self, print_detail=False):
-    #     print(f"现金：{self.cash.quantize(Decimal('0.00'))},持仓：{self.hold_num},"
-    #           f"持仓价值估算：{self.hold_num * 5.5}，资产估值：{self.cash.quantize(Decimal('0.00')) + Decimal(self.hold_num) * Decimal('5.5')}，"
-    #           f"交易费用：{self.cost.quantize(Decimal('0.00'))}")
-    #     self.logs.print_logs(print_detail=print_detail)
-    #     self.logs.generate_json()
+    def print_count(self):
+        print(f"现金：{self.statistics_cash()},持仓：{self.statistics_hold()} 手,"
+              f"持仓价值估算：{self.statistics_hold_worth()}，资产估值：{self.statistics_worth()}，"
+              f"交易费用：{self.statistics_cost()}")
+
+    def statistics_worth(self):
+        """
+            综合资产价值
+        :return:
+        """
+        return self.cash.quantize(Decimal('0.00')) + Decimal(self.hold_num) * Decimal('5.5')
+
+    def statistics_hold(self):
+        """
+            持仓数量（手）
+        :return:
+        """
+        return self.hold_num / 100
+
+    def statistics_cash(self):
+        """
+            现金
+        :return:
+        """
+        return self.cash.quantize(Decimal('0.00'))
+
+    def statistics_hold_worth(self):
+        """
+            持仓价值（以价格中位数计算）
+        :return:
+        """
+        return self.hold_num * 5.5
+
+    def statistics_cost(self):
+        """
+            手续费（含印花税）
+        :return:
+        """
+        return self.cost.quantize(Decimal('0.00'))
 
 
-class StockManger():
+class StockManager():
 
     def __init__(self, logs):
         self.managers = {}
@@ -67,10 +100,27 @@ class StockManger():
         self.cash += manager.cash
 
     def print_logs(self, print_detail=False):
-        print("")
-        print(f"现金：{self.cash.quantize(Decimal('0.00'))},持仓：{self.hold_num},"
-              f"持仓价值估算：{self.hold_num * 5.5}，资产估值：{self.cash.quantize(Decimal('0.00')) + Decimal(self.hold_num) * Decimal('5.5')}，"
-              f"交易费用：{self.cost.quantize(Decimal('0.00'))}")
+        print("策略执行情况分析：")
+        print(f"注册策略及初始资金：{self.cash_map}")
+        print("策略执行状况：")
+        for k in self.managers.keys():
+            print(f"策略名称：{k}")
+            self.managers[k].print_count()
+        print("策略执行结果总结：")
+        total_worth = 0
+        total_hold = 0
+        total_cost = 0
+        for i in self.managers.values():
+            i: StrategyManager
+            total_worth += i.statistics_worth()
+            total_hold += i.statistics_hold()
+            total_cost += i.statistics_cost()
+
+        print(f"策略初始资金总计：{self.cash}\n"
+              f"策略执行后资产估值：{total_worth}\n"
+              f"策略执行后股票持仓：{total_hold}\n"
+              f"策略手续费总计：{total_cost}")
+        print("交易日志：")
         self.logs.print_logs(print_detail=print_detail)
         self.logs.generate_json()
 

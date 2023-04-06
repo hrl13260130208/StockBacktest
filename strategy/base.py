@@ -1,4 +1,4 @@
-from stock import Manager
+from stock import StrategyManager
 
 
 # ====================================
@@ -8,7 +8,7 @@ from stock import Manager
 class Base():
 
     def __init__(self, manager):
-        self.manager: Manager = manager
+        self.manager: StrategyManager = manager
 
     def open(self, date, open):
         pass
