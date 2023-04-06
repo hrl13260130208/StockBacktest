@@ -29,7 +29,7 @@ class BackTest():
 
         self.obs=Observer()
         self.obs.add_strategy(open)
-        # self.obs.add_strategy(grid)
+        self.obs.add_strategy(grid)
 
     def run(self,start_date="20220607",end_date="20230220"):
         # 时间为key的净值，收益和同期沪深基准
@@ -39,7 +39,7 @@ class BackTest():
             self.obs.run(d)
 
         self.obs.finish()
-        self.manager.print_logs(print_detail=True)
+        self.manager.print_logs(print_detail=False)
 
 
 

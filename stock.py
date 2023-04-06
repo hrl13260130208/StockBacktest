@@ -62,7 +62,7 @@ class StrategyManager():
             持仓数量（手）
         :return:
         """
-        return self.hold_num / 100
+        return int(self.hold_num / 100)
 
     def statistics_cash(self):
         """
@@ -102,10 +102,13 @@ class StockManager():
     def print_logs(self, print_detail=False):
         print("策略执行情况分析：")
         print(f"注册策略及初始资金：{self.cash_map}")
+        print("\n\n")
         print("策略执行状况：")
         for k in self.managers.keys():
             print(f"策略名称：{k}")
             self.managers[k].print_count()
+
+        print("\n\n")
         print("策略执行结果总结：")
         total_worth = 0
         total_hold = 0
@@ -116,9 +119,9 @@ class StockManager():
             total_hold += i.statistics_hold()
             total_cost += i.statistics_cost()
 
-        print(f"策略初始资金总计：{self.cash}\n"
-              f"策略执行后资产估值：{total_worth}\n"
-              f"策略执行后股票持仓：{total_hold}\n"
+        print(f"策略初始资金总计：  {self.cash}\n"
+              f"策略执行后资产估值： { total_worth}\n"
+              f"策略执行后股票持仓：{total_hold} 手\n"
               f"策略手续费总计：{total_cost}")
         print("交易日志：")
         self.logs.print_logs(print_detail=print_detail)
